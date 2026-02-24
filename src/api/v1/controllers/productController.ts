@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../../../constants/httpConstants";
-import * as ticketService from "../servaces/ticketService";
-import { getAllTickets, getOneTicket, Ticket, calculateUrgency, tickets} from "../servaces/ticketService";
+import * as ticketService from "../servaces/productService";
+import { getAllTickets, getOneTicket, Ticket, calculateUrgency, tickets} from "../servaces/productService";
+import { successResponse } from "../models/responseModel";
 
 export const healthData = (req: Request, res: Response) => {
     res.status(HTTP_STATUS.OK).json({
@@ -14,7 +15,7 @@ export const healthData = (req: Request, res: Response) => {
 
 export const getAllTicket = (req: Request, res: Response) => {
     let result = getAllTickets();
-    res.status(HTTP_STATUS.OK).json({ message: "Tickets retrieved", ...result });
+    res.status(HTTP_STATUS.OK).json(successResponse(result, "Here are your"));
 };
 
 export const getTicketById = (req: Request, res: Response) => {
@@ -103,45 +104,45 @@ export const ticketUrgencyById = (req: Request, res: Response): void => {
     }
 };
 
-export const updateTicket = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
+// export const updateTicket = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//     try {
 
-        if (!req.body.id) {
-            res.status(HTTP_STATUS.BAD_REQUEST).json({
-                message: "Missing required field: title",
-            });
-        } else if (!req.body.description) {
-            res.status(HTTP_STATUS.BAD_REQUEST).json({
-                message: "Missing required field: description",
-            });
-        }
+//         if (!req.body.id) {
+//             res.status(HTTP_STATUS.BAD_REQUEST).json({
+//                 message: "Missing required field: title",
+//             });
+//         } else if (!req.body.description) {
+//             res.status(HTTP_STATUS.BAD_REQUEST).json({
+//                 message: "Missing required field: description",
+//             });
+//         }
         
-        const { id } = req.params;
+//         const { id } = req.params;
 
-        const { description } = req.body;
+//         const { description } = req.body;
 
-        const updatedItem: Ticket = await ticketService.updateTicketById(id, { id: Number(id), description });
+//         const updatedItem: Ticket = await ticketService.updateTicketById(id, { id: Number(id), description });
 
-        res.status(HTTP_STATUS.OK).json({
-            message: "Item updated successfully",
-            data: updatedItem,
-        });
-    } catch (error: unknown) {
-        next(error);
-    }
-};
+//         res.status(HTTP_STATUS.OK).json({
+//             message: "Item updated successfully",
+//             data: updatedItem,
+//         });
+//     } catch (error: unknown) {
+//         next(error);
+//     }
+// };
 
-export const deleteTicketById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const id: string = req.params.id;
+// export const deleteTicketById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//     try {
+//         const id: string = req.params.id;
 
-        await ticketService.deleteTicket(id);
-        res.status(HTTP_STATUS.OK).json({
-            message: "Item deleted successfully",
-        });
-    } catch (error: unknown) {
-        next(error);
-    }
-};
+//         await ticketService.deleteTicket(id);
+//         res.status(HTTP_STATUS.OK).json({
+//             message: "Item deleted successfully",
+//         });
+//     } catch (error: unknown) {
+//         next(error);
+//     }
+// };
 
 

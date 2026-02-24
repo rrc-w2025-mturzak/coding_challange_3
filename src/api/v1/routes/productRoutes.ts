@@ -1,6 +1,6 @@
 import express, { Router } from "express";
-import { healthData, createTicket, getTicketById, updateTicket, deleteTicketById, ticketUrgencyById } from "../controllers/ticketController";
-import { getAllTicket } from "../controllers/ticketController";
+import { healthData, createTicket, getTicketById, updateTicket, deleteTicketById, ticketUrgencyById } from "../controllers/productController";
+import { getAllTicket } from "../controllers/productController";
 
 const ticketRouter: Router = express.Router();
 

@@ -1,4 +1,4 @@
-import { Ticket, calculateUrgency } from "src/api/v1/servaces/ticketService";
+import { Ticket, calculateUrgency } from "src/api/v1/servaces/productService";
 
 describe("calculateUrgency", () => {
     it("it should return Moderate", () => {

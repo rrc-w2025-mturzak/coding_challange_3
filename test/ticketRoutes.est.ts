@@ -11,8 +11,8 @@ jest.mock("../src/api/v1/controllers/ticketController", () => ({
 
 import request from "supertest";
 import express from "express";
-import routes from "../src/api/v1/routes/ticketRoutes";
-import * as controller from "../src/api/v1/controllers/ticketController";
+import routes from "../src/api/v1/routes/productRoutes";
+import * as controller from "../src/api/v1/controllers/productController";
 
 const app = express();
 app.use(express.json());
