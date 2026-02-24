@@ -1,15 +1,13 @@
 import express, { Router } from "express";
-import { healthData, createTicket, getTicketById, updateTicket, deleteTicketById, ticketUrgencyById } from "../controllers/productController";
-import { getAllTicket } from "../controllers/productController";
+import { healthData, createProduct, getProductById, getAllProduct, updateProductByIdAsync, deleteProductByIdAsync } from "../controllers/productController";
 
-const ticketRouter: Router = express.Router();
+const productRouter: Router = express.Router();
 
-ticketRouter.get("/health", healthData);
-ticketRouter.get("/tickets", getAllTicket);
-ticketRouter.get("/tickets/:id", getTicketById);
-ticketRouter.get("/tickets/:id/urgency", ticketUrgencyById);
-ticketRouter.post("/tickets", createTicket);
-ticketRouter.put("/tickets/:id", updateTicket);
-ticketRouter.delete("/tickets/:id", deleteTicketById);
+productRouter.get("/health", healthData);
+productRouter.get("/products/:id", getProductById);
+productRouter.get("/products", getAllProduct);
+productRouter.post("/products", createProduct);
+productRouter.put("/products/:id", updateProductByIdAsync);
+productRouter.delete("/products/:id", deleteProductByIdAsync);
 
-export default ticketRouter;
+export default productRouter;

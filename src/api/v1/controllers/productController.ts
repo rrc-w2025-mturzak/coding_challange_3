@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { HTTP_STATUS } from "../../../constants/httpConstants";
-import * as ticketService from "../servaces/productService";
-import { getAllTickets, getOneTicket, Ticket, calculateUrgency, tickets} from "../servaces/productService";
 import { successResponse } from "../models/responseModel";
+import { createNewProduct, getProductByIdAsync, getAllProducts, updateProductById, deleteProductById } from "../services/productService";
+import { ProductCreateRequest } from "../models/productCreateRequestModel";
 
 export const healthData = (req: Request, res: Response) => {
     res.status(HTTP_STATUS.OK).json({
@@ -13,136 +13,56 @@ export const healthData = (req: Request, res: Response) => {
     });
 };
 
-export const getAllTicket = (req: Request, res: Response) => {
-    let result = getAllTickets();
-    res.status(HTTP_STATUS.OK).json(successResponse(result, "Here are your"));
-};
-
-export const getTicketById = (req: Request, res: Response) => {
-    let id = Number(req.params.id)
-
-    if (Number.isNaN(id)) {
-      res.status(HTTP_STATUS.BAD_REQUEST).json({message: `Invalid ticket ID: ${req.params.id}`});
+export const createProduct = async (req: Request, res: Response) => {
+    const requestProduct: ProductCreateRequest = {
+        name: req.body.name,
+        sku: req.body.sku,
+        quantity: req.body.quantity,
+        price: req.body.price,
+        category: req.body.category
     }
+    let result = await createNewProduct(requestProduct)
+    res.status(HTTP_STATUS.CREATED).send(result)
+}
 
-    let result = getOneTicket(id)
-
-    if (result === undefined) {
-      res.status(HTTP_STATUS.NOT_FOUND).json({message: `Ticket with ID ${id} not found`});
-    }
-    
-    res.status(HTTP_STATUS.OK).json(result);
-};
-
-export const createTicket = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getProductById = async (req: Request, res: Response) => {
     try {
-        const newTicket = req.body;
+        let id = req.params.id as string;
+        let results = await getProductByIdAsync(id)
 
-        if (!req.body.id) {
-            res.status(HTTP_STATUS.BAD_REQUEST).json({
-                message: "Missing required field: title",
-            });
-        } else if (!req.body.description) {
-            res.status(HTTP_STATUS.BAD_REQUEST).json({
-                message: "Missing required field: description",
-            });
-        }
-        
-        const updatedItem: Ticket = await ticketService.createNewTicket(newTicket);
-
-        res.status(HTTP_STATUS.OK).json({
-            message: "Item updated successfully",
-            data: updatedItem,
-        });
-    } catch (error: unknown) {
-        next(error);
+        res.status(HTTP_STATUS.OK).json(successResponse(results, "Product retrieved"))
+    } catch (error) {
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error"})
     }
-};
+}
 
-export const createItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getAllProduct = async (req: Request, res: Response) => {
     try {
-        if (!req.body.title) {
-            res.status(HTTP_STATUS.BAD_REQUEST).json({
-                message: "Missing required field: title",
-            });
-        } else if (!req.body.description) {
-            res.status(HTTP_STATUS.BAD_REQUEST).json({
-                message: "Missing required field: description",
-            });
-        } else {
-            const { id, title, description, priority, status } = req.body;
-
-            const newItem: Ticket = await ticketService.createNewTicket({ id, title, description, priority, status })
-            res.status(HTTP_STATUS.CREATED).json({
-                message: "Item created successfully",
-                data: newItem,
-            });
-        }
-    } catch (error: unknown) {
-        next(error);
+        const products = await getAllProducts();
+        res.status(HTTP_STATUS.OK).json(successResponse(products, "Products retrieved"))
+    } catch (error) {
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error"})
     }
-};
+}
 
-export const ticketUrgencyById = (req: Request, res: Response): void => {
-    const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        res.status(HTTP_STATUS.BAD_REQUEST).json({
-            message: `Invalid event ID: ${req.params.id}`
-        });
-    } else {
-        const ticket = tickets.find(e => e.id === id);
-
-        if (!ticket) {
-            res.status(HTTP_STATUS.NOT_FOUND).json({
-                message: `Event with ID ${id} not found`
-            });
-        } else {
-            const result = calculateUrgency(ticket);
-            res.status(HTTP_STATUS.OK).json({ message: "Ticket urgency calculated", data: result });
-        }
+export const updateProductByIdAsync = async (req: Request, res: Response) => {
+    let id: string = req.params.id as string; 
+    let request: ProductCreateRequest = {
+        name: req.body.name,
+        sku: req.body.sku,
+        quantity: req.body.quantity,
+        price: req.body.price,
+        category: req.body.category
     }
-};
 
-// export const updateTicket = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//     try {
+    await updateProductById(id, request)
 
-//         if (!req.body.id) {
-//             res.status(HTTP_STATUS.BAD_REQUEST).json({
-//                 message: "Missing required field: title",
-//             });
-//         } else if (!req.body.description) {
-//             res.status(HTTP_STATUS.BAD_REQUEST).json({
-//                 message: "Missing required field: description",
-//             });
-//         }
-        
-//         const { id } = req.params;
+    res.status(HTTP_STATUS.NO_CONTENT).send(`Product ${id} was updated`);
+}
 
-//         const { description } = req.body;
+export const deleteProductByIdAsync = async (req: Request, res: Response) => {
+    let id = req.params.id as string;
+    await deleteProductById(id)
 
-//         const updatedItem: Ticket = await ticketService.updateTicketById(id, { id: Number(id), description });
-
-//         res.status(HTTP_STATUS.OK).json({
-//             message: "Item updated successfully",
-//             data: updatedItem,
-//         });
-//     } catch (error: unknown) {
-//         next(error);
-//     }
-// };
-
-// export const deleteTicketById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//     try {
-//         const id: string = req.params.id;
-
-//         await ticketService.deleteTicket(id);
-//         res.status(HTTP_STATUS.OK).json({
-//             message: "Item deleted successfully",
-//         });
-//     } catch (error: unknown) {
-//         next(error);
-//     }
-// };
-
-
+    res.status(HTTP_STATUS.NO_CONTENT).send(`Product ${id} was deleted`);
+}
