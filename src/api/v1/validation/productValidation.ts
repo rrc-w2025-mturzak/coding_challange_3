@@ -58,11 +58,11 @@ export const postSchemas = {
                 "any.required": "sku is required",
                 "string.empty": "sku cannot be empty",
             }),
-            quantity: Joi.string().optional().messages({
+            quantity: Joi.number().optional().messages({
                 "any.required": "quantity is required",
                 "string.empty": "quantity cannot be empty",
             }),
-            price: Joi.string().optional().messages({
+            price: Joi.number().optional().messages({
                 "any.required": "price is required",
                 "string.empty": "price cannot be empty",
             }),

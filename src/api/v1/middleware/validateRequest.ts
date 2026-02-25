@@ -93,12 +93,15 @@ export const validateRequest = (
             }
 
             if (schemas.query) {
-                req.query = validatePart(
+                const validatedQuery = validatePart(
                     schemas.query,
                     req.query,
                     "Query",
                     defaultOptions.stripQuery
                 );
+
+                // mutate instead of replacing
+                Object.assign(req.query, validatedQuery);
             }
 
             // If there are any validation errors, return them
